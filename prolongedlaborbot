@@ -1,0 +1,107 @@
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+from telegram import ReplyKeyboardMarkup
+import os
+from emoji import emojize
+
+updater = Updater(token='')
+dispatcher = updater.dispatcher
+
+dicT = {}
+reply_keyboard = [['Yes', 'No']]
+reply_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True)
+start = ReplyKeyboardMarkup([['/start']], one_time_keyboard=True, resize_keyboard=True)
+ok = ReplyKeyboardMarkup([['Yes']], one_time_keyboard=True, resize_keyboard=True)
+
+
+def strcomand(bot, update):
+    dicT[update.message.chat_id] = {'count': 1}
+    bot.send_message(chat_id=update.message.chat_id, text='Parameter 1 \n exceeds threshold?', reply_markup=reply_markup)
+
+def txtmes(bot, update):
+    if update.message.chat_id not in dicT:
+        bot.send_message(chat_id=update.message.chat_id, text='Parameter 1 \n exceeds threshold?', reply_markup=reply_markup)
+        dicT[update.message.chat_id] = {'count': 1}
+        return
+
+    elif dicT[update.message.chat_id]['count'] == 1:
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N1']= 1
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 2 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 2 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['N1'] = 0
+            dicT[update.message.chat_id]['count'] += 1
+
+    elif dicT[update.message.chat_id]['count'] == 2:
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N2']= 1
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 3 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 3 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['N2'] = 0
+            dicT[update.message.chat_id]['count'] += 1
+
+    elif dicT[update.message.chat_id]['count'] == 3:
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N3']= 1
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 4 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 4 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['N3'] = 0
+            dicT[update.message.chat_id]['count'] += 1
+
+    elif dicT[update.message.chat_id]['count'] == 4:
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N4']= 1
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 5 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 5 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['N4'] = 0
+            dicT[update.message.chat_id]['count'] += 1
+
+    elif dicT[update.message.chat_id]['count'] == 5:
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N5']= 1
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 6 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+            bot.send_message(chat_id=update.message.chat_id, text='Parameter 6 \n exceeds threshold?', reply_markup=reply_markup)
+            dicT[update.message.chat_id]['N5'] = 0
+            dicT[update.message.chat_id]['count'] += 1
+
+    elif dicT[update.message.chat_id]['count'] == 6:
+
+        if update.message.text.lower()=='yes':
+            dicT[update.message.chat_id]['N6']= 1
+            dicT[update.message.chat_id]['count'] +=1
+        elif update.message.text.lower()=='no':
+             dicT[update.message.chat_id]['N6'] = 0
+             dicT[update.message.chat_id]['count'] += 1
+
+        N1 = dicT[update.message.chat_id]['N1']
+        N2 = dicT[update.message.chat_id]['N2']
+        N3 = dicT[update.message.chat_id]['N3']
+        N4 = dicT[update.message.chat_id]['N4']
+        N5 = dicT[update.message.chat_id]['N5']
+        N6 = dicT[update.message.chat_id]['N6']
+        bot.send_message(chat_id=update.message.chat_id, text='The probability of prolonged labour is:' ,reply_markup=start)
+
+        bot.send_message(chat_id=update.message.chat_id, text=str(((61.5*N1)+(69.2*N2)+(76.9*N3)+(61.5*N4)+(38.4*N5)+(61.5*N6))/6), reply_markup=start)
+        del dicT[update.message.chat_id]
+        return
+
+
+if __name__ == '__main__':
+    
+    
+
+    start_command_handler = CommandHandler('start', strcomand)
+    text_message_handler = MessageHandler(Filters.text, txtmes)
+    dispatcher.add_handler(start_command_handler)
+    dispatcher.add_handler(text_message_handler)
+
+    updater.idle()
